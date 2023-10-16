@@ -39,4 +39,8 @@ module.exports.connect = async function (done) {
     }
 }
 
-module.exports.get = () => { return state.db }
+module.exports.get = () => {
+    if (!(state.db))
+        this.connect()
+    return state.db
+}
