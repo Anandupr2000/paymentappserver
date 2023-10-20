@@ -39,10 +39,12 @@ module.exports.connect = async function (done) {
     }
 }
 
-module.exports.get =  () => {
+module.exports.get = () => {
     // if (!(state.db))
     //     await this.connect((err) => {
     //         if (err) console.log("Database Connection Error " + err);
     //     })
+    if (!state.db)
+        this.connect()
     return state.db
 }
