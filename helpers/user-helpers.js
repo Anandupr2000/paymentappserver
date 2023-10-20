@@ -5,6 +5,11 @@ var ObjectId = require("mongodb").ObjectId
 const bcrypt = require('bcrypt')
 
 module.exports = {
+    getAllUsers: () => {
+        return new Promise(async (resolve, reject) => {
+            resolve(await db.get().collection(collections.USER_COLLECTION).find().toArray())
+        })
+    },
     findUser: keyword => {
         return new Promise(async (resolve, reject) => {
             const projection = {
