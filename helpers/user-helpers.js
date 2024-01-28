@@ -2,7 +2,11 @@ var db = require('../db/connect')
 var collections = require('../db/collections')
 var ObjectId = require("mongodb").ObjectId
 
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt');
+const nodemailer = require('nodemailer');
+const { generateEmailContentForOtp } = require('./email');
+
+let otpStore = {};
 
 module.exports = {
     getAllUsers: () => {
@@ -84,6 +88,80 @@ module.exports = {
                 // returning object status inside response like object , with only one key-value pair
                 reject({ error: "Register yourself first" })
             }
+        })
+    },
+    sendOtp: (type = "mobileno", value = '8848081856') => { // value received will be mobile no or email depending on type
+        return new Promise(async (resolve, reject) => {
+
+            // user otps are stored in otpStore using userphn/email whichever is the value received as key values
+            otpStore.value = {
+                'otp': Math.floor(1000 + Math.random() * 9000),
+                'expireTime': new Date().getTime() + 5 * 60 * 1000 // adding 5min to current time for expire
+            }
+            if (type == "mobileno") {
+                var unirest = require("unirest");
+
+                var request = unirest("POST", "https://www.fast2sms.com/dev/bulkV2");
+
+                request.headers({
+                    "authorization": "Q1aM5htITczBq70C4flmADjnV9W6JERbsKYPveSUHuLroi8XkgEsD5o1PvKfB2T3k6RFGVrdcilHCanb"
+                });
+                console.log(`OTP send is ${otpStore.otp}`);
+                request.form({
+                    "message": `Your otp for verification is ${otpStore.otp}, and will expire within 5 minutes`,
+                    "language": "english",
+                    "route": "q",
+                    "numbers": value,
+                });
+
+                request.end(function (res) {
+                    if (res.error) {
+                        console.log(res.error);
+                        reject({ optSend: false, error: res.error, 'otp': otpStore.otp })
+                    }
+                    console.log(res.body);
+                    resolve({ optSend: true, 'otp': otpStore.otp, message: res.body.message[0] })
+                    // res.json({ 'opt send': true, 'otp': otpStore.otp })
+                });
+            }
+            else if (type == 'email') {
+                // create transporter object with smtp server details
+                const transporter = nodemailer.createTransport({
+                    host: 'smtp.gmail.com',
+                    port: 587,
+                    auth: {
+                        user: 'hipay.app.payment@gmail.com',
+                        pass: 'nudn vdzq kvzu felt'
+                    }
+                });
+                // send email
+                let res = await transporter.sendMail({
+                    from: 'hipay.app.payment@gmail.com',
+                    to: 'ananduprajesh@gmail.com',
+                    subject: 'Test Email Subject',
+                    html: generateEmailContentForOtp(otpStore.value.otp) // value will phn no or email address
+                });
+                if (res.accepted) {
+                    // console.log(res.response.match(/ok/i));
+                    resolve({ success: true })
+                }
+                else if (res.rejected) {
+                    reject({ success: false, res: res.response })
+                }
+            }
+            else {
+                reject({ optSend: false, error: "Unauthorized access" })
+            }
+        })
+    },
+    verifyUser: (otp, value = '8848081856') => {
+        return new Promise((resolve, reject) => {
+            if (new Date().getTime() > otpStore.value.expireTime)
+                reject({ optVerified: false, error: "Unauthorized access" })
+            if (otpStore.value.otp === otp)
+                resolve({ optVerified: true })
+            else
+                reject({ optVerified: false, error: "Otp doesn't matches" })
         })
     }
 }

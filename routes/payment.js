@@ -19,4 +19,11 @@ router.post('/', (req, res) => {
         })
 })
 
+router.post('/getAllTransactions', (req, res) => {
+    paymentHelpers.getTransactions().then(
+        response =>
+            res.json(response)
+    )
+})
+
 module.exports = router

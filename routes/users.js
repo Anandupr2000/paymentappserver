@@ -2,6 +2,7 @@ var express = require('express');
 const userHelpers = require("../helpers/user-helpers");
 const { response } = require('../app');
 var router = express.Router();
+const fast2sms = require('fast-two-sms')
 
 /* GET users listing. */
 router.get('/', function (req, res, next) {
@@ -41,4 +42,19 @@ router.post('/search', (req, res) => {
       res.json(response)
     })
 })
+
+router.post('/sendOTP', async (req, res) => {
+  let { type, value } = req.body
+  // console.log(type, value);
+  res.json(await userHelpers.sendOtp(type, value))
+  // res.json(req.body)
+})
+
+router.post('/verifyOTP', (req, res) => {
+  // console.log(req.params);
+  console.log(req.body);
+  console.log(otpStore.otp);
+  res.json({ "verification": req.body.otp == otpStore.otp })
+})
+
 module.exports = router;
