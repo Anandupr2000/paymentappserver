@@ -3,15 +3,6 @@ const fs = require('fs');
 
 module.exports = {
     generateEmailContentForOtp: otp => {
-        // Specify the path to your image file
-        const imagePath = '../public/images/app_icon.png';
-        // const imagePath = "";
-
-        // Read the image file as a Buffer
-        const imageBuffer = fs.readFileSync(imagePath);
-        console.log(imageBuffer);
-        // Convert the Buffer to a Base64-encoded string
-        const imageBase64 = imageBuffer.toString('base64');
 
         return (
             `<!DOCTYPE html>
@@ -103,7 +94,7 @@ module.exports = {
        <header>
            <!-- <h1>Header</h1> -->
            <!-- <img src="./images/app_icon.png" /> -->
-           <img src=${require("../public/images/app_icon.png")} />
+           <img src='https://paymentappserver.onrender.com/images/app_icon.png'/>
        </header>
        <main>
            <h2>Your OTP</h2>

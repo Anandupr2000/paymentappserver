@@ -130,8 +130,8 @@ module.exports = {
                     host: 'smtp.gmail.com',
                     port: 587,
                     auth: {
-                        user: 'hipay.app.payment@gmail.com',
-                        pass: 'nudn vdzq kvzu felt'
+                        user: process.env.GMAIL_USERNAME,
+                        pass: process.env.GMAIL_PWD
                     }
                 });
                 // send email
@@ -156,12 +156,19 @@ module.exports = {
     },
     verifyUser: (otp, value = '8848081856') => {
         return new Promise((resolve, reject) => {
+            if (Object.keys(otpStore).length === 0){
+                reject({ optVerified: false, error: "Internal Server error",tip:"Try restarting server" })
+                return
+            }
+
+            console.log("otp generated for user");
+            console.log(Object.keys(otpStore).length === 0);
             if (new Date().getTime() > otpStore.value.expireTime)
                 reject({ optVerified: false, error: "Unauthorized access" })
             if (otpStore.value.otp === otp)
-                resolve({ optVerified: true })
+                resolve({ success: true })
             else
-                reject({ optVerified: false, error: "Otp doesn't matches" })
+                reject({ success: false, error: "Otp doesn't matches" })
         })
     }
 }
