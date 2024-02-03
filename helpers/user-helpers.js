@@ -106,9 +106,9 @@ module.exports = {
                 request.headers({
                     "authorization": "Q1aM5htITczBq70C4flmADjnV9W6JERbsKYPveSUHuLroi8XkgEsD5o1PvKfB2T3k6RFGVrdcilHCanb"
                 });
-                console.log(`OTP send is ${otpStore.otp}`);
+                console.log(`OTP send is ${otpStore.value.otp}`);
                 request.form({
-                    "message": `Your otp for verification is ${otpStore.otp}, and will expire within 5 minutes`,
+                    "message": `Your otp for verification is ${otpStore.value.otp}, and will expire within 5 minutes`,
                     "language": "english",
                     "route": "q",
                     "numbers": value,
@@ -117,10 +117,10 @@ module.exports = {
                 request.end(function (res) {
                     if (res.error) {
                         console.log(res.error);
-                        reject({ optSend: false, error: res.error, 'otp': otpStore.otp })
+                        reject({ optSend: false, error: res.error, 'otp': otpStore.value.otp })
                     }
                     console.log(res.body);
-                    resolve({ optSend: true, 'otp': otpStore.otp, message: res.body.message[0] })
+                    resolve({ optSend: true, 'otp': otpStore.value.otp, message: res.body.message[0] })
                     // res.json({ 'opt send': true, 'otp': otpStore.otp })
                 });
             }
