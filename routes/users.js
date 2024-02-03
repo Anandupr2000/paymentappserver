@@ -56,8 +56,8 @@ router.post('/verifyOTP', async (req, res) => {
   // console.log(otpStore.otp);
 
   // res.json({ "verification": req.body.otp == otpStore.otp })
-  let { otp, email } = req.body
-  res.json(await userHelpers.verifyUser(otp, email).catch(err => err))
+  let { otp, value } = req.body // value may be email or phn
+  res.json(await userHelpers.verifyUser(otp, value).catch(err => err))
 })
 
 module.exports = router;
