@@ -51,13 +51,13 @@ router.post('/sendOTP', async (req, res) => {
 })
 
 router.post('/verifyOTP', async (req, res) => {
-  // console.log(req.params);
+  console.log(req.params);
   console.log(req.body);
   // console.log(otpStore.otp);
 
   // res.json({ "verification": req.body.otp == otpStore.otp })
   let { otp, value } = req.body // value may be email or phn
-  res.json(await userHelpers.verifyUser(otp, value).catch(err => err))
+  res.json(await userHelpers.verifyOTP(otp, value).catch(err => err))
 })
 
 module.exports = router;

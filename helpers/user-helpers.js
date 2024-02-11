@@ -99,6 +99,7 @@ module.exports = {
                 'expireTime': new Date().getTime() + 5 * 60 * 1000 // adding 5min to current time for expire
             }
             if (type == "mobileno") {
+                console.log("sending otp to mobile  ");
                 var unirest = require("unirest");
 
                 var request = unirest("POST", "https://www.fast2sms.com/dev/bulkV2");
@@ -154,19 +155,28 @@ module.exports = {
             }
         })
     },
-    verifyUser: (otp, value = '8848081856') => {
+    verifyOTP: (otp, value) => {
         return new Promise((resolve, reject) => {
-            if (Object.keys(otpStore).length === 0){
-                reject({ optVerified: false, error: "Internal Server error",tip:"Try restarting server" })
+            if (Object.keys(otpStore).length === 0) {
+                reject({ optVerified: false, error: "Internal Server error", tip: "Try restarting server" })
                 return
             }
+            // console.log(Object.keys(otpStore).length === 0);
 
-            console.log("otp generated for user");
-            console.log(Object.keys(otpStore).length === 0);
-            if (new Date().getTime() > otpStore.value.expireTime)
-                reject({ optVerified: false, error: "Unauthorized access" })
-            if (otpStore.value.otp === otp)
+            console.log("otp verification for user");
+            console.log(otpStore.value.otp);
+            // if (new Date().getTime() > otpStore.value.expireTime)
+            //     reject({ optVerified: false, error: "Unauthorized access" })
+
+            if (otpStore.value.otp === otp) {
+                // update user as verified my finding 
+                db.get().collection(collections.USER_COLLECTION)
+                    .updateMany(
+                        { 'email': value },
+                        { $set: { 'isVerified': true } }
+                    )
                 resolve({ success: true })
+            }
             else
                 reject({ success: false, error: "Otp doesn't matches" })
         })
