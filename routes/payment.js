@@ -20,7 +20,9 @@ router.post('/', (req, res) => {
 })
 
 router.post('/getAllTransactions', (req, res) => {
-    paymentHelpers.getTransactions().then(
+    console.log(req.body)
+    const { phn } = req.body
+    paymentHelpers.getTransactions(phn).then(
         response =>
             res.json(response)
     )

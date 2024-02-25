@@ -32,7 +32,8 @@ router.post('/login', (req, res) => {
     })
 })
 router.post('/search', (req, res) => {
-  userHelpers.findUser(req.body.keyword)
+  console.log(req.body);
+  userHelpers.findUser(req.body.keyword, req.body.currentUserPhn)
     .then(response => {
       console.log(response);
       res.json(response)
@@ -41,6 +42,33 @@ router.post('/search', (req, res) => {
       console.log(err);
       res.json(response)
     })
+})
+router.post('/fetch', (req, res) => {
+  console.log(req.body);
+  userHelpers.fetchUser(req.body.phn)
+    .then(response => {
+      console.log(response);
+      res.json(response)
+    })
+    .catch(err => {
+      console.log(err);
+      res.json(response)
+    })
+})
+
+router.put('/update', async (req, res) => {
+  // const phn = req.body.id
+  const { id, data } = req.body
+  // const { id, data } = req.body
+  // let phn = id
+  if (!id || !data) {
+    console.log("invalid format");
+    res.json({ success: false, msg: "Invalid format" })
+  }
+  // else {
+    console.log(req.body);
+  // }
+  res.json(await userHelpers.updateUser(id, data))
 })
 
 router.post('/sendOTP', async (req, res) => {
@@ -59,5 +87,9 @@ router.post('/verifyOTP', async (req, res) => {
   let { otp, value } = req.body // value may be email or phn
   res.json(await userHelpers.verifyOTP(otp, value).catch(err => err))
 })
-
+router.post('/transactions', async (req, res) => {
+  console.log(req.body);
+  let phn = req.body.phn
+  res.json(await userHelpers.getTransactions(phn))
+})
 module.exports = router;

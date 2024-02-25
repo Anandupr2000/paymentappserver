@@ -23,7 +23,7 @@ module.exports = {
             let tData = {
                 sender: senderPhn,
                 receiver: receiverPhn,
-                time: TimeStamp,
+                time: new Date(),
                 senderBalanceBefore: senderBalance,
                 senderBalanceAfter: senderBalance - payment,
                 receiverBalanceBefore: receiverBalance,
@@ -35,8 +35,16 @@ module.exports = {
     },
     getTransactions: (userPhn = '9089781232') => {
         return new Promise(async (resolve, reject) => {
-            console.log("search transaction history for 9089781232");
-            let transactions = await db.get().collection(collections.TRANSACTION_COLLECTION).find({ sender: userPhn }).toArray()
+            console.log("search transaction history for ",userPhn);
+            let transactions = await db.get().collection(collections.TRANSACTION_COLLECTION).find(
+                {
+                    $or: [
+                        { sender: userPhn },
+                        { receiver: userPhn }
+                    ]
+                }
+
+            ).toArray()
             // console.log(transactions);
             resolve({ 'success': true, 'transactions': transactions })
         })
