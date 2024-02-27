@@ -188,8 +188,8 @@ module.exports = {
                 // send email
                 let res = await transporter.sendMail({
                     from: 'hipay.app.payment@gmail.com',
-                    to: 'ananduprajesh@gmail.com',
-                    subject: 'Test Email Subject',
+                    to: value,
+                    subject: 'Hipay Email Verification',
                     html: generateEmailContentForOtp(otpStore.value.otp) // value will phn no or email address
                 });
                 if (res.accepted) {
